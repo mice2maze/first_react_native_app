@@ -1,11 +1,12 @@
 {
   "expo": {
-    "name": "first_react_app",
-    "slug": "first_react_app",
+    "name": "mjr",
+    "slug": "mjr",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "scheme": "mjr",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
