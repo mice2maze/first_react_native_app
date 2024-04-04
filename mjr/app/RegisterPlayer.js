@@ -36,9 +36,9 @@ function ShowAllPlayer(reloadList) {
   }, [reloadList]);
 
   if (players === null || players.length === 0) {
-    console.log("debug:", __filename,'-', Date().toLocaleString(),'- No player found');
+    console.log("debug:", "ShowAllPlayer",'-', Date().toLocaleString(),'- No player found');
     return null;
-  } else  console.log("debug:", __filename,'-', Date().toLocaleString(), 'len', players.length, players);
+  } else  console.log("debug:", "ShowAllPlayer",'-', Date().toLocaleString(), 'len', players.length, players);
 
   const removePlayer = (rID) => {
     setPlayers((current) =>

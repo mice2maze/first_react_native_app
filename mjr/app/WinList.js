@@ -5,19 +5,33 @@ import { Table, TableWrapper, Row } from 'react-native-table-component';
 import { useScoreList } from './scoreListContext';
 
 export default function WinList() {
-  const tableHead = ['自己', '上家', '對家', '下家'];
+  const {pList} = useScoreList() ;
+  //const tableHead = ['自己', '上家', '對家', '下家'];
   const widthArr = [44, 44, 44, 44];
   //const tableFooter = [50,100,-50,-100];
   const scrollViewRef = useRef(null);
   const {scoreList, totalScore} = useScoreList();
-  console.log("debug:", __filename,'-', Date().toLocaleString(), 'WinList - TotalScore', totalScore);
+  //console.log("debug:", "WinList",'-', Date().toLocaleString(), 'WinList - TotalScore', totalScore);
+  //console.log("debug:", "WinList.js",'-', Date().toLocaleString(), "pList", pList);
+
+  
+  const playerArray = () => {
+    var tableHead=[];
+    pList.forEach(element => {
+      tableHead.push(element.PlayerName);
+    });
+    //console.log("debug:", "WinList.js",'-', Date().toLocaleString(), "playerArray", tableHead);
+  
+    return tableHead;
+  } 
+  
 
 return (
   <View style={styles.container}>
   <ScrollView horizontal={true} ref={scrollViewRef} onContentSizeChange={() => scrollViewRef.current.scrollToEnd()}>
     <View>
       <Table borderStyle={{borderWidth: 1, borderColor: '#C1C0B9'}}>
-        <Row data={tableHead} widthArr={widthArr} style={styles.header} textStyle={styles.text}/>
+        <Row data={playerArray()} widthArr={widthArr} style={styles.header} textStyle={styles.text}/>
       </Table>
       <ScrollView style={styles.dataWrapper}>
         <Table borderStyle={{borderWidth: 1, borderColor: '#C1C0B9'}}>
@@ -59,13 +73,13 @@ return (
 //     const state = this.state;
 
 //     //const [scoreList, setScoreList]  =  useContext(scoreListContext);
-//     console.log("debug:", __filename,'-', Date().toLocaleString(), 'WinList - ScoreListContext Check');
+//     console.log("debug:", "__filename",'-', Date().toLocaleString(), 'WinList - ScoreListContext Check');
 
 //     if (state.scoreList != null) {
-//       console.log("debug:", __filename,'-', Date().toLocaleString(), 'WinList - ScoreList', state.scoreList, state.scoreList.length);
+//       console.log("debug:", "__filename",'-', Date().toLocaleString(), 'WinList - ScoreList', state.scoreList, state.scoreList.length);
 
 //     } else {
-//       console.log("debug:", __filename,'-', Date().toLocaleString(), 'WinList - ScoreList is null');
+//       console.log("debug:", "__filename",'-', Date().toLocaleString(), 'WinList - ScoreList is null');
 
 //     }
 
@@ -76,8 +90,8 @@ return (
 //     //   }
 //     //   state.scoreList.push(state.playerScore);
 //     // }
-//     // console.log("debug:", __filename,'-', Date().toLocaleString(),'PlayerScore', state.playerScore);
-//     // console.log("debug:", __filename,'-', Date().toLocaleString(),'PlayerScore',state.scoreList[0].scores);
+//     // console.log("debug:", "__filename",'-', Date().toLocaleString(),'PlayerScore', state.playerScore);
+//     // console.log("debug:", "__filename",'-', Date().toLocaleString(),'PlayerScore',state.scoreList[0].scores);
 
 //     return (
 //       <View style={styles.container}>

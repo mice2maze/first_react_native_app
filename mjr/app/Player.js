@@ -13,23 +13,23 @@ import { getGameResult } from './mjrdbHandler';
 //return final score
 function returnFS(wn, los, rList, fN, fType) {
   const  fanN = rList.find(obj => {
-    console.log("debug:", __filename,'Fan List found!')
-    console.log("debug:", __filename,'-',rList);
-    console.log("debug:", __filename,'-',fType);
-    console.log("debug:", __filename,'-','Winner:'+wn);
-    console.log("debug:", __filename,'-','Loser: '+los);
-    console.log("debug:", __filename,'-',obj.FanNum + ':' + obj.bySelfPick + ':' + obj.byDiscard);
+    console.log("debug:", "__filename",'Fan List found!')
+    console.log("debug:", "__filename",'-',rList);
+    console.log("debug:", "__filename",'-',fType);
+    console.log("debug:", "__filename",'-','Winner:'+wn);
+    console.log("debug:", "__filename",'-','Loser: '+los);
+    console.log("debug:", "__filename",'-',obj.FanNum + ':' + obj.bySelfPick + ':' + obj.byDiscard);
     return (obj.FanNum == fN)  ? obj.bySelfPick : 0;
   });
 
   const playerResult = getGameResult();
-  //console.log("debug:", __filename,'-','discard - RS:'+ fanN.byDiscard + 'Total:' + scoreHandler);
+  //console.log("debug:", "__filename",'-','discard - RS:'+ fanN.byDiscard + 'Total:' + scoreHandler);
   let rs = [];
   if (fType == 'bySelfPick') {
     for (let i=0;i<4;i++) {
       (i==wn? playerResult[i] += fanN.bySelfPick * 3: playerResult[i]  -= fanN.bySelfPick )
     }
-    console.log("debug:", __filename,'-','selfpick - RS:' + fanN.bySelfPick + 'Total:' + playerResult[0]);
+    console.log("debug:", "__filename",'-','selfpick - RS:' + fanN.bySelfPick + 'Total:' + playerResult[0]);
     //scoreHandler(playerResult[0],playerResult[1] ,playerResult[2] ,playerResult[3]  );
     rs = [playerResult[wn],playerResult[1] ,playerResult[2] ,playerResult[3] ]
     return rs;
@@ -39,7 +39,7 @@ function returnFS(wn, los, rList, fN, fType) {
       (i==wn? playerResult[i] += fanN.byDiscard: 0 );
     }
 
-    console.log("debug:", __filename,'-','discard - RS:'+ fanN.byDiscard + 'Total:' + playerResult[0]);
+    console.log("debug:", "__filename",'-','discard - RS:'+ fanN.byDiscard + 'Total:' + playerResult[0]);
     // scoreHandler(playerResult[0],playerResult[1] ,playerResult[2] ,playerResult[3]  );
     rs = [playerResult[wn],playerResult[1] ,playerResult[2] ,playerResult[3] ]
     return rs;
@@ -49,7 +49,7 @@ function returnFS(wn, los, rList, fN, fType) {
 const headerButton =(title, action, isSelected) =>{
   const buttonColor = isSelected ? 'aqua' : 'coral';
   const displayTitle = isSelected ? title + '[ ]': title + '[x]'
-  console.log("debug:", __filename,'-','style:', buttonColor);
+  console.log("debug:", "__filename",'-','style:', buttonColor);
 
   return(
       <Button title={displayTitle} color={buttonColor} onPress={action}>
@@ -118,7 +118,7 @@ function PlayerModal({
   const [byDiscardLabel, setByDiscardLabel] = useState('出冲')
   const [winLabel, setWinLabel] = useState('食胡');
 
-  //console.log("debug:", __filename,'-', Date().toLocaleString(), "rsList=", fanList);
+  //console.log("debug:", "__filename",'-', Date().toLocaleString(), "rsList=", fanList);
   const [isSelected, setIsSelected] = useState(false);
   const [isSelfPick, setSelfPick] = useState(false);
   const [isByDiscard, setByDiscard] = useState(false);
@@ -127,7 +127,7 @@ function PlayerModal({
   const loserCheckBox =(loser, winType, action, pid) =>{
     //const title = (winType==2) ? '出冲 ✅':'出冲';
     const checkboxColor = (winType==2) ? 'blueviolet' : 'coral';
-    console.log("debug:", __filename,'-','loserCheckBox - Player ID : ', pid, winType, action, loser);
+    console.log("debug:", "__filename",'-','loserCheckBox - Player ID : ', pid, winType, action, loser);
     return(
         <Button title={loser} color={checkboxColor} onPress={action} loID={pid}>
        </Button>
@@ -136,7 +136,7 @@ function PlayerModal({
   
   const tongleLoserID = ({loID}) => {
     setLoserID(loID);
-    console.log("debug:", __filename,'-','tongleLoserID - Player ID : ', loID);
+    console.log("debug:", "__filename",'-','tongleLoserID - Player ID : ', loID);
 
   }
 
@@ -149,7 +149,7 @@ function PlayerModal({
       setByDiscardLabel('出冲');
 
     }
-    console.log("debug:", __filename,'-','tongleSelfPick - WinType : ', winType);
+    console.log("debug:", "__filename",'-','tongleSelfPick - WinType : ', winType);
 
   }
 
@@ -159,7 +159,7 @@ function PlayerModal({
     }  else {
       setWinType(0);
     }
-    console.log("debug:", __filename,'-','tongleByDiscard - WinType :', winType);
+    console.log("debug:", "__filename",'-','tongleByDiscard - WinType :', winType);
   }
 
   const toggleButton = () => {

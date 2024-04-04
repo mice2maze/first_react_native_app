@@ -15,58 +15,57 @@ const db = openDatabase();
 function insertGameResult(ps1,ps2,ps3,ps4,t1) {
   db.transaction((tx) => {
     tx.executeSql('insert into PlayingGame(P1Score, P2Score, P3Score, P4Score, TourID) values (?,?,?,?,?)', [ps1,ps2,ps3,ps4,t1]);
-    console.log("debug:", __filename,"rs"+ps);
+    console.log("debug:", "newgame.js","rs"+ps);
   });
 }
 
-function getRuleList(pid) {
-  const [rList, setRList] = useState([]);
-  //const rList = useRef([]);
-  const sql = "SELECT * FROM gameRule order by FanNum;";
-  const params = [];
-  console.log("debug:", __filename,'-', Date().toLocaleString(), "getRuleList - start Get Rule list - ", pid);
+// function getRuleList(pid) {
+//   const [rList, setRList] = useState([]);
+//   //const rList = useRef([]);
+//   const sql = "SELECT * FROM gameRule order by FanNum;";
+//   const params = [];
+//   console.log("debug:", "newgame.js",'-', Date().toLocaleString(), "getRuleList - start Get Rule list - ", pid);
 
-  //useEffect(() => {
-     db.transaction((tx) => {
-         tx.executeSql(sql, params,
-          (_, { rows: { _array } }) => {
+//   //useEffect(() => {
+//      db.transaction((tx) => {
+//          tx.executeSql(sql, params,
+//           (_, { rows: { _array } }) => {
             
-            setRList(_array);
-            //rList.current = _array;
-            console.log("debug:", __filename,'-', Date().toLocaleString(), "inside db transaction - 1", _array, " = rList =", rList);
+//             setRList(_array);
+//             //rList.current = _array;
+//             console.log("debug:", "newgame.js",'-', Date().toLocaleString(), "inside db transaction - 1", _array, " = rList =", rList);
 
-          },
-          (error) => console.error(error)
-        );
-      });
-      console.log("debug:", __filename,'-', "inside db transaction - 2", sql, rList);
-  //}, [pid]);  
-  console.log("debug:", __filename,'-', "outside useEffect rulelist", rList);
+//           },
+//           (error) => console.error(error)
+//         );
+//       });
+//       console.log("debug:", "newgame.js",'-', "inside db transaction - 2", sql, rList);
+//   //}, [pid]);  
+//   console.log("debug:", "newgame.js",'-', "outside useEffect rulelist", rList);
 
-  if (rList === null || rList.length === 0) {
-       console.log("debug - ruleList is null or length = 0 ");
-       return null;
-  }
-  return (
-    rList
-  ) ;
-}
+//   if (rList === null || rList.length === 0) {
+//        console.log("debug - ruleList is null or length = 0 ");
+//        return null;
+//   }
+//   return (
+//     rList
+//   ) ;
+// }
 
 let i = 10;
 
 const PlayGame = ({navigation}) => {
-  const [rowGap, setRowGap] = useState(10);
-  const [columnGap, setColumnGap] = useState(10);
- // const {initWinResultSet,setWinnerFlag,setWinner, setLabel, winFlag, winResultSet, pList} = useScoreList() ;
-
-
+  // const [rowGap, setRowGap] = useState(10);
+  // const [columnGap, setColumnGap] = useState(10);
+  var rGap = 10;
+  var colGap = 10;
   return (
     <ScoreListContext>  
     <PreviewLayout
-      columnGap={columnGap}
-      handleColumnGapChange={setColumnGap}
-      rowGap={rowGap}
-      handleRowGapChange={setRowGap}
+      columnGap={colGap}
+      //handleColumnGapChange={setColumnGap}
+      rowGap={rGap}
+      //handleRowGapChange={setRowGap}
       navi={navigation}
       >
       <WinTableLayout/>
@@ -75,68 +74,63 @@ const PlayGame = ({navigation}) => {
   );
 };
 
-const showPlayerName = () => {
-  const {pList, getPlayerList} = useScoreList();
-  getPlayerList();
-}
-
 const WinTableLayout = () => {
-  const {initWinResultSet,setWinnerFlag,setWinner, setLabel, winFlag, winResultSet, pList, winLabel, initAllVar} = useScoreList() ;
-  showPlayerName();
-
-  console.log("debug:", __filename,'-', Date().toLocaleString(), "WinTableLayout - pList",  pList);
-
+  const {initWinResultSet,setWinner, winFlag, winResultSet, pList,getPlayerList, getFanList, winLabel} = useScoreList() ;
+  //showPlayerName();
+  getPlayerList();
+  getFanList();
+  console.log("debug:", "newgame.js",'-', Date().toLocaleString(), "WinTableLayout - pList",  pList);
+  //console.log("debug:", "newgame.js",'-', Date().toLocaleString(), "WinTableLayout - pList.PlayerName",  pList[1].PlayerName);
 
   return(
     <View style={[styles.container, 10, 10]}>
     <Text style={styles.sideBox}></Text>
     <Pressable
       onPress={() => {
-          setWinnerFlag(1);
+          setWinner(pList[1].PlayerID);
+          //setWinnerFlag(pList[1].PlayerID);
+
           //initWinResultSet();
-          setLabel();
-          console.log("debug:", __filename,'-', Date().toLocaleString(), "eastBox - winFlag", winFlag, "result", winResultSet);
+          console.log("debug:", "newgame.js",'-', Date().toLocaleString(), "eastBox - winFlag", winFlag, "result", winResultSet,"pid", pList[1].PlayerID);
       }}>
     <View style={styles.eastBox}>
-      <Text >{'上家 - '+pList[1].playerName} </Text>
+      <Text >{'上家 - '+pList[1].PlayerName} </Text>
       <Text>{winLabel}</Text>
     </View>
     </Pressable>
     <Text style={styles.sideBox}></Text>
     <Pressable
       onPress={() => {
-        setWinnerFlag(2);
+        setWinner(pList[2].PlayerID);
+        //setWinnerFlag(pList[2].PlayerID);
         // initWinResultSet();
         // setWinner(2);
-        setLabel();
-        console.log("debug:", __filename,'-', Date().toLocaleString(), "northBox - winFlag", winFlag, "result", winResultSet);
+        console.log("debug:", "newgame.js",'-', Date().toLocaleString(), "northBox - winFlag", winFlag, "result", winResultSet);
       }}>
       <View style={styles.northBox}>
-      <Text >{'對家 - '+pList[2].playerName} </Text>
+      <Text >{'對家 - '+pList[2].PlayerName} </Text>
       <Text>{winLabel}</Text>
     </View>
     </Pressable>
     <WinList/>
     <Pressable
       onPress={() => {
-        setWinnerFlag(0);
-        setLabel();
-          console.log("debug:", __filename,'-', Date().toLocaleString(), "southBox - winFlag", winFlag, "result", winResultSet);
+        setWinner(pList[0].PlayerID);
+          console.log("debug:", "newgame.js",'-', Date().toLocaleString(), "southBox - winFlag", winFlag, "result", winResultSet);
       }}>
       <View style={styles.southBox}>
-      <Text >{'自己 - '+pList[0].playerName} </Text>
+      <Text >{'自己 - '+pList[0].PlayerName} </Text>
       <Text>{winLabel}</Text>
     </View>
     </Pressable>
     <Text style={styles.sideBox}></Text>
     <Pressable
       onPress={() => {
-          setWinnerFlag(3);
-          setLabel();
-          console.log("debug:", __filename,'-', Date().toLocaleString(), "westBox - winFlag", winFlag, "result", winResultSet);
+          setWinner(pList[3].PlayerID);
+          console.log("debug:", "newgame.js",'-', Date().toLocaleString(), "westBox - winFlag", winFlag, "result", winResultSet);
       }}>
       <View style={styles.westBox}>
-      <Text >{'下家 - '+pList[3].playerName} </Text>
+      <Text >{'下家 - '+pList[3].PlayerName} </Text>
       <Text>{winLabel}</Text>
     </View>
     </Pressable>      
@@ -147,8 +141,10 @@ const WinTableLayout = () => {
 
 
 const winFanRow = () => {
-  const {winResultSet, fanList, fanSelected, setFan} = useScoreList() ;
-  console.log("debug:", __filename,'-', Date().toLocaleString(), "winFanRow - rs", winResultSet);
+  const {winResultSet, fanList, setFan} = useScoreList() ;
+  //console.log("debug:", "newgame.js",'-', Date().toLocaleString(), "winFanRow - win result set", winResultSet);
+  //console.log("debug:", "newgame.js",'-', Date().toLocaleString(), "winFanRow - fan list", fanList);
+  const fanSelected=winResultSet.WinFan;
   rs = fanList.map((index) => (
     <View>
     <Pressable
@@ -164,12 +160,14 @@ const winFanRow = () => {
 }
 
 
-
 const winTypeRow = () => {
-  const {winType,setType} = useScoreList() ;
+  const {winResultSet,setType} = useScoreList() ;
+  const wType = winResultSet.WinType;
+  //console.log("debug:", "newgame.js",'-', Date().toLocaleString(), "wType- ", wType,winResultSet.WinType);
+
   r = [
      (
-      <Pressable style={(winType == 1) ? styles.selectedFanBox: styles.fanBox}
+      <Pressable style={(wType == 1) ? styles.selectedFanBox: styles.fanBox}
       onPress={() => {
           setType(1);
        }}>
@@ -177,14 +175,14 @@ const winTypeRow = () => {
      </Pressable>),
      (<Text style={styles.bgWhite}>  </Text>), 
      (
-      <Pressable style={(winType ==3) ? styles.selectedFanBox: styles.fanBox}
+      <Pressable style={(wType ==3) ? styles.selectedFanBox: styles.fanBox}
       onPress={() => {
           setType(3);
        }}>
      <Text style={styles.fanText}>包自摸</Text> 
      </Pressable>),   (<Text style={styles.bgWhite}>  </Text>), 
      (
-      <Pressable style={(winType ==2) ? styles.selectedFanBox: styles.fanBox}
+      <Pressable style={(wType ==2) ? styles.selectedFanBox: styles.fanBox}
       onPress={() => {
           setType(2);
        }}>
@@ -192,53 +190,58 @@ const winTypeRow = () => {
      </Pressable>),          
 ];
 
-//console.log("debug:", __filename,'-', Date().toLocaleString(), "winTypeRow - ", r);
+//console.log("debug:", "newgame.js",'-', Date().toLocaleString(), "winTypeRow - ", r);
   return r;
 }
 
 const loserRow = () => {
-  const {loserGroup,winnerID,selectLoser,setLoser,winType} = useScoreList() ;
-  const [loserList] = useState(loserGroup);
+  const {pList,winResultSet,setLoser} = useScoreList() ;
+  //const [loserList] = useState(loserGroup);
+  //const loserList = ['0','1','2','3'];
+  const wT = winResultSet.WinType;
   const winLabel = ['', '自摸','出冲','包自摸'];
-  console.log("debug:", __filename,'-', Date().toLocaleString(), "loserRow - loserGroup", loserGroup);
-  console.log("debug:", __filename,'-', Date().toLocaleString(), "loserRow - loserList", loserList);
-  console.log("debug:", __filename,'-', Date().toLocaleString(), "loserRow - winnerID", winnerID);
- // console.log("debug:", __filename,'-', Date().toLocaleString(), "loserRow - WinType", WinType);
-
-
-  const rs = (loserList.filter(loserList=>loserList.playerID != winnerID).map(rs => (
-    (<Pressable style={(selectLoser == rs.playerID) ? styles.selectedFanBox: styles.fanBox}
-     onPress={() => { setLoser(rs.playerID); }}>
-     <Text style={styles.fanText}>{rs.playerName}</Text>
-     </Pressable>
+  const wpID = pList[winResultSet.WinnerID].PlayerID;
+  //console.log("debug:", "newgame.js",'-', Date().toLocaleString(), "loserRow - loserGroup", loserGroup);
+  //console.log("debug:", "newgame.js",'-', Date().toLocaleString(), "loserRow - pList", pList);
+  //console.log("debug:", "newgame.js",'-', Date().toLocaleString(), "loserRow - winnerID", winnerID);
+  console.log("debug:", "newgame.js",'-', Date().toLocaleString(), "loserRow - WinType", wT);
+  //
+  const rs = (pList.filter(pList=>pList.PlayerID != wpID).map(rs => (
+    (<Pressable style={(winResultSet.LoserID == rs.PlayerID) ? styles.selectedFanBox: styles.fanBox}
+      onPress={() => { setLoser(rs.PlayerID); }}><Text style={styles.fanText}>  {rs.PlayerName} </Text>
+      </Pressable>
      )
     )));
     rs.unshift( (<Text style={styles.bgWhite}>  </Text>));
-    rs.unshift((<Text> {winLabel[winType]} </Text>));
+    rs.unshift((<Text > {winLabel[wT]} </Text>));
+   console.log("debug:", "newgame.js",'-', Date().toLocaleString(), "loserRow", rs);
 
   return  rs;
 }
 
-const WinnerView = (showList) => {
-  const {winnerID, winType,winResultSet,winFlag,getPlayerList,getWinFanSize} = useScoreList();
-  const showLoser = (winType == 1 || winType == -1) ? false:true;
-  console.log("debug:", __filename,'-', Date().toLocaleString(), "WinnerView-sc", winResultSet);
-  console.log("debug:", __filename,'-', Date().toLocaleString(), "WinnerView-WinType", winType);
-  console.log("debug:", __filename,'-', Date().toLocaleString(), "WinnerView-showLoser", showLoser);
-  console.log("debug:", __filename,'-', Date().toLocaleString(), "WinnerView-winFlag", winFlag);
-  console.log("debug:", __filename,'-', Date().toLocaleString(), "WinnerView-pList", getPlayerList);
-  
+const winFanBoxArray = () => {
+  const {fanList} = useScoreList() ;
+  var rs=[];
+  fanList.forEach(element => {
+    rs.push(40);
+  });
+  console.log("debug:", "newgame.js",'-', Date().toLocaleString(), "winFanBoxArray", rs);
+
+  return rs;
+} 
+
+const WinnerView = () => {
+  const {winResultSet,pList} = useScoreList();
   return (
     <View>
-      {(winFlag) &&  <Table borderStyle={{ borderWidth: 0, borderColor: '#FFF', }}>
-      <Row data={[showPlayerName(winnerID)+ ' 食胡  ']} widthArr={[80]} style={styles.header} textStyle={styles.text} />
+      <Table borderStyle={{ borderWidth: 0, borderColor: '#FFF', }}>
+      <Row data={[pList[winResultSet.WinnerID].PlayerName+ ' 食胡  ']} widthArr={[80]} style={styles.header} textStyle={styles.text} />
       <Row data={winTypeRow()} widthArr={[80, 20, 80, 20,80]} style={styles.fanBox} textStyle={styles.selectedFan}/>
-      { showLoser ? <Row data={loserRow()} widthArr={[80, 20, 60,60,60]} style={styles.fanBox} textStyle={styles.selectedFan}/> :
+      { (winResultSet.WinType == 2 || winResultSet.WinType == 3) ? <Row data={loserRow()} widthArr={[80, 20, 60,60,60]} style={styles.fanBox} textStyle={styles.selectedFan}/> :
       <Row data={[' ']} widthArr={[80]} style={styles.header} textStyle={styles.text} /> }
       <Row data={['番數']} widthArr={[80]} style={styles.header} textStyle={styles.text} />
-      <Row data={winFanRow()} widthArr={getWinFanSize(40)} style={styles.fanBox} textStyle={styles.selectedFan}/>
-      </Table>}
-
+      <Row data={winFanRow()} widthArr={winFanBoxArray()} style={styles.fanBox} textStyle={styles.selectedFan}/>
+      </Table>
     </View>
   )
 }
@@ -246,16 +249,13 @@ const WinnerView = (showList) => {
 
 const PreviewLayout = ({
   children,
-  handleColumnGapChange,
-  handleRowGapChange,
   rowGap,
   columnGap,
   navi,
 }) => {
-  const {winFlag,setScore} = useScoreList();
+  const {winResultSet,setScore} = useScoreList();
 
-  console.log("debug:", __filename,'-', Date().toLocaleString(), "PreviewLayout - winFlag", winFlag);
-  
+  console.log("debug:", "newgame.js",'-', Date().toLocaleString(), "PreviewLayout -  result", winResultSet);
   
   return (
   <View style={styles.previewContainer}>
@@ -269,11 +269,12 @@ const PreviewLayout = ({
                 navi.navigate('HomeScreen');
                 }}  />
     </View>
-    <WinnerView showList={winFlag}/>
+    {(winResultSet.WinnerID != -1) && <WinnerView/>}
+    {(winResultSet.WinnerID != -1) && 
     <View style={styles.footerContainer}><Text></Text>
       <Button title="Submit" style={styles.button}
               onPress={setScore}  />
-    </View>    
+    </View>}    
   </View>
   )
 };

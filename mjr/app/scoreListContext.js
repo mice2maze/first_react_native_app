@@ -15,6 +15,7 @@ export function ScoreListContext({ children }) {
     const [winFlag, setWinFlag] = useState(false);
     const [winLabel, setWinLabel] = useState('食胡');
 
+    
     const [fanList, setFanList] = useState([{FanNum: 3, byDiscard: 8, bySelfPick: 4, ruleID: 1}, 
         {FanNum: 4, byDiscard: 16, bySelfPick: 8, ruleID: 2}, 
         {FanNum: 5, byDiscard: 24, bySelfPick: 12, ruleID: 3}, 
@@ -22,15 +23,14 @@ export function ScoreListContext({ children }) {
         {FanNum: 7, byDiscard: 48, bySelfPick: 24, ruleID: 5}, 
         {FanNum: 8, byDiscard: 64, bySelfPick: 32, ruleID: 6}, 
         {FanNum: 9, byDiscard: 96, bySelfPick: 48, ruleID: 7},
-        {FanNum: 10, byDiscard: 96, bySelfPick: 48, ruleID: 8},
+        {FanNum: 10, byDiscard: 128, bySelfPick: 64, ruleID: 8},
       ]);
     
     const [pList, setPList] = useState( [  { PlayerID: 0, PlayerName:'自己'}, 
       {PlayerID : 1, PlayerName: '上家'}, 
       {PlayerID : 2, PlayerName: '對家'},
-      {PlayerID : 3, PlayerName: '下家'} ] );
-
-  //  const [pList, setPlist] = useState([{ playerID: 0, playerName:''}]);
+      {PlayerID : 3, PlayerName: '下家'}] );
+    //const [pListLoading, setPListLoading] = useState(false);
 
     const  [loserGroup, setLoserGroup] = useState(null);        
 
@@ -43,111 +43,81 @@ export function ScoreListContext({ children }) {
     const [winResultSet, setWinResult] = useState({WinnerID:-1, WinType:-1, WinFan:-1, LoserID:-1, byDiscard:-1, bySelfPick:-1 }); 
     // -1 means initial, none 
     // WinnerID & LoserID = playerID
-    // winType = -1, 1 = selfPick, 2 = byDiscard, 3=PayAllSelfPick  
+    // winType = -1 nothing, 1 = selfPick, 2 = byDiscard, 3=PayAllSelfPick  
     // WinFan = Fanlist index number 0 - n
-    const clearAllVar = () => {
-      setWinnerID(-1);
-      setFanSelected(-1);
-      setWinType(-1);
-      clearWinResultSet(-1);
-    }
-     
 
-    // function rsPlayName(pID) {
-    //   const [isPlayerLoaded, setPlayerLoaded] = useState(false);
-    //   console.log("debug:", __filename,'-', Date().toLocaleString(), "rsPlayName - in ", pID);
 
-    //   useEffect(() => { 
-    //     async function loadDataAsync() {
-    //       try {
-    //         getPlayerList(setPList);
-    //       } catch (e) {
-    //       console.log("debug:", __filename,'-', Date().toLocaleString(), "rsPlayName");
-    //     }
-    //     }  
-    //   loadDataAsync();
-    //   }, [] );
-    // return isPlayerLoaded;
+    // const clearAllVar = () => {
+    //   setWinnerID(-1);
+    //   setFanSelected(-1);
+    //   setWinType(-1);
+    //   clearWinResultSet(-1);
     // }
 
+    const getFanList = () => {
+
+      useEffect ( () => { 
+        const loadFanList = async () => {
+          db.transaction( tx => {
+            tx.executeSql(
+             "select FanNum, byDiscard, bySelfPick, ruleID from gameRule order by FanNum;", [],
+              (_, { rows: { _array } }) => setFanList(_array)
+              );
+         }, 
+         (t, error) => { console.log("db error getFanList"); console.log(error) },
+         (_t, _success) => { console.log("loaded FanList", fanList)}
+         );
+        };
+
+        loadFanList();
+
+        },[]);
+      // console.log("debug: ","scoreListContext", "getFanList - Fan list\n", fanList);
+    }    
     const getPlayerList = () => {
 
-      console.log("debug: ",__filename, "getPlayerList - Init Player list\n");
-       db.transaction( tx => {
-           tx.executeSql(
-            "select * from PlayerList;", [],
-            (_, { rows: { _array } }) => setPList(_array)
-          );
-        }, 
-        (t, error) => { console.log("db error load players"); console.log(error) },
-        (_t, _success) => { console.log("loaded players", _array)}
-      );
-      console.log("debug: ",__filename, "getPlayerList - Player list\n", pList);
+      useEffect ( () => { 
+        const loadPlayerList = async () => {
+          //setPListLoading (true);
+          db.transaction( tx => {
+            tx.executeSql(
+             "select row_number() over ( order by PlayerID)-1 as PlayerID, PlayerName from PlayerList;", [],
+              (_, { rows: { _array } }) => setPList(_array)
+              );
+         }, 
+         (t, error) => { console.log("db error load players"); console.log(error) },
+         (_t, _success) => { console.log("loaded players", pList)}
+         );
+        };
+
+        loadPlayerList();
+
+        },[]);
+      // console.log("debug: ","scoreListContext", "getPlayerList - Player list\n", pList);
     }    
-
-    const getPlayerName = (plyID) => {
-
-      console.log("debug: ",__filename, "getPlayerList - Get Player Name\n");
-       db.transaction( tx => {
-           tx.executeSql(
-            "select * from PlayerList where PlayerID =?;", [plyID],
-            (_, { rows: { _array } }) => setPList(_array)
-          );
-        }, 
-        (t, error) => { console.log("db error load players"); console.log(error) },
-        (_t, _success) => { console.log("loaded players", _array)}
-      );
-      console.log("debug: ",__filename, "getPlayerName - Player Name\n", pList);
-    }    
-    // const getPlist = (pID) => {
-    //   console.log("debug:", __filename,'-', Date().toLocaleString(), "getPlist - in ", pID);
-
-    //   /* useEffect(() => {
-    //     prepPlayerList();
-    //   },[]);
-    //   */
-    //    prepPlayerList();
-
-    //   console.log("debug:", __filename,'-', Date().toLocaleString(), "getPlist - out ", pList);
-
-    // }
-
-    // function prepPlayerList() {
-    //   console.log("debug:", __filename,'-', Date().toLocaleString(), "prepPlayerList - in ", pList);
-    //   return getPlayerList(setPList);
-    // }
 
     const clickedWinner = (wID) => {
-        setWinnerID(winnerID == wID?-1:wID) ;
-        setWinResult({...winResultSet, WinnerID:winnerID == wID?-1:wID});    
-        console.log("debug:", __filename,'-', Date().toLocaleString(), "clickedWinner - winnerID", winnerID, wID);
-
+        setWinResult({...winResultSet, WinnerID:wID,  WinType:-1, WinFan:-1, LoserID:-1, byDiscard:-1, bySelfPick:-1 });    
+        setWinLabel('');
     }
     
     const clickedFanSelect = (FanNum, byDiscardFan, selfPickFan) => {
-        const bSameFanNum = (fanSelected==FanNum);
-        setFanSelected(bSameFanNum?-1:FanNum);
-        setWinResult({...winResultSet, WinFan:bSameFanNum?-1:FanNum,  byDiscard:bSameFanNum?-1:byDiscardFan, bySelfPick:bSameFanNum?-1:selfPickFan});    
+        setWinResult({...winResultSet, WinFan:FanNum,  byDiscard:byDiscardFan, bySelfPick:selfPickFan});    
     } 
 
     const clickedLoser = (plyID)=> {
-        setSelectLoser(selectLoser==plyID?-1:plyID);
-        setWinResult({...winResultSet, LoserID:selectLoser==plyID?-1:plyID});
+        setWinResult({...winResultSet, LoserID:plyID});
     }
 
     const clickWinType = (wType) => {
-        setWinType(winType==wType?-1:wType);
-        setWinResult({...winResultSet, WinType:winType==wType?-1:wType});
+        //setWinType(winType==wType?-1:wType);
+        setWinResult({...winResultSet, WinType:wType});
     }
-
-    const winResultSetHandler = ( fanNum, byDiscard, bySelfPick) => {    
-        setWinResult({...winResultSet, fanNum, byDiscard, bySelfPick})
-        //console.log("debug:", __filename,'-', Date().toLocaleString(), "winResultSetHandler", winResultSet);
-        return rs;
-      }
     
     const clearWinResultSet = () => {
         setWinResult({WinnerID:-1, WinType:-1, WinFan:-1, LoserID:-1, byDiscard:-1, bySelfPick:-1 });
+        setWinLabel('食胡');
+
     }
 
     const scoreListHandler = () => {
@@ -159,9 +129,9 @@ export function ScoreListContext({ children }) {
         let p3Score = 0;
         let p0Score = 0;
 
-        console.log("debug:", __filename,'-', Date().toLocaleString(), 'ScoreListContext - scoreListHandler Check', winResultSet);
-        console.log("debug:", __filename,'-', Date().toLocaleString(), 'ScoreListContext - TotalScore', totalScore);
-        console.log("debug:", __filename,'-', Date().toLocaleString(), 'ScoreListContext - firstRow', firstRow );
+        console.log("debug:", "scoreListContext",'-', Date().toLocaleString(), 'ScoreListContext - scoreListHandler Check', winResultSet);
+        console.log("debug:", "scoreListContext",'-', Date().toLocaleString(), 'ScoreListContext - TotalScore', totalScore);
+        console.log("debug:", "scoreListContext",'-', Date().toLocaleString(), 'ScoreListContext - firstRow', firstRow );
 
         if (winResultSet.WinnerID != -1  && winResultSet.WinFan > 0 && winResultSet.WinType != -1) {
             switch(winResultSet.WinType) {
@@ -192,7 +162,8 @@ export function ScoreListContext({ children }) {
                     p3Score = winResultSet.bySelfPick * -1;                             
                     break;
                 }
-                clickWinFlag(-1);
+                //clickWinFlag(-1);
+                clearWinResultSet();
                 if (firstRow)  
                 {
                     setScoreList([{gameID: rowCnt, scores:[p0Score, p1Score, p2Score, p3Score]}]);
@@ -293,7 +264,8 @@ export function ScoreListContext({ children }) {
                     }
                     break;
                   }
-                  clickWinFlag(-1);
+                  //clickWinFlag(-1);
+                  clearWinResultSet();
                   if (firstRow )  
                   {
                       setScoreList([{gameID: rowCnt, scores:[p0Score, p1Score, p2Score, p3Score]}]);
@@ -396,7 +368,8 @@ export function ScoreListContext({ children }) {
                     }
                     break;
                   }
-                  clickWinFlag(-1);
+                  //clickWinFlag(-1);
+                  clearWinResultSet();
                   if (firstRow )  
                   {
                       setScoreList([{gameID: rowCnt, scores:[p0Score, p1Score, p2Score, p3Score]}]);
@@ -411,21 +384,16 @@ export function ScoreListContext({ children }) {
         }
     };
  
-    const clickWinFlag = (wID) => {
-        setWinFlag( !winFlag);
-        //clearWinResultSet(-1);          
-        clickedWinner(winFlag == false?wID:-1);
-        setFanSelected(-1);
-        setWinType(-1);
-        setSelectLoser(-1);
-        console.log("debug:", __filename,'-', Date().toLocaleString(), "clickWinFlag - winFlag", winFlag, "--WinerID", wID, "setWinnerID ", winnerID);
-
-    }
-    
-    const clickWinLabel = () => {
-        setWinLabel(winFlag? '食胡':'');
-    }
-    
+    // const clickWinFlag = (wID) => {
+    //     setWinFlag( winFlag? false:true);     
+    //     clickedWinner(wID);
+    //     setFanSelected(-1);
+    //     setWinType(-1);
+    //     setSelectLoser(-1);
+    //     setWinLabel(winFlag? '食胡':'');
+    //     console.log("debug:", "scoreListContext",'-', Date().toLocaleString(), "clickWinFlag - winFlag", winFlag, "--WinnerID", wID, "setWinnerID ", winnerID);
+    // }
+  
   return (
     <scoreListContext.Provider 
     value={{ scoreList, setScore: scoreListHandler, 
@@ -433,12 +401,11 @@ export function ScoreListContext({ children }) {
         fanSelected, setFan: clickedFanSelect, 
         selectLoser, setLoser: clickedLoser, 
         winType, setType: clickWinType,
-        winResultSet, setResult:winResultSetHandler,
-        winFlag, setWinnerFlag:clickWinFlag,
-        winLabel, setLabel:clickWinLabel,
-        initWinResultSet: clearWinResultSet,
-        pList, loserGroup, fanList, initAllVar : clearAllVar,
-        getPlayerList, 
+        winResultSet,
+        winFlag, 
+        winLabel, initWinResultSet: clearWinResultSet,
+        pList, loserGroup, fanList,
+        getPlayerList, getFanList,
         totalScore
      }}>
       {children}

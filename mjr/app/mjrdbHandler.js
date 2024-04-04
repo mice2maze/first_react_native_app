@@ -14,7 +14,7 @@ export function getRuleList(pid) {
   //const rList = useRef([]);
   const sql = "SELECT * FROM gameRule order by FanNum;";
   const params = [];
-  console.log("debug:", __filename,'-', Date().toLocaleString(), "getRuleList - start Get Rule list - ", pid);
+  console.log("debug:", "__filename",'-', Date().toLocaleString(), "getRuleList - start Get Rule list - ", pid);
 
   useEffect(() => {
      db.transaction((tx) => {
@@ -23,15 +23,15 @@ export function getRuleList(pid) {
             
             // setRList(_array);
             rList.current = _array;
-            console.log("debug:", __filename,'-', Date().toLocaleString(), "inside db transaction - 1", _array, " = rList =", rList);
+            console.log("debug:", "__filename",'-', Date().toLocaleString(), "inside db transaction - 1", _array, " = rList =", rList);
 
           },
           (error) => console.error(error)
         );
       });
-      console.log("debug:", __filename,'-', "inside db transaction - 2", sql, rList);
+      console.log("debug:", "__filename",'-', "inside db transaction - 2", sql, rList);
    }, [pid]);  
-  console.log("debug:", __filename,'-', "outside useEffect rulelist", rList);
+  console.log("debug:", "__filename",'-', "outside useEffect rulelist", rList);
 
   if (rList === null || rList.length === 0) {
        console.log("debug - ruleList is null or length = 0 ");
@@ -44,7 +44,7 @@ export function getRuleList(pid) {
 
 export const getPlayerList = async (setPlayerList) => {
 
-    console.log("debug: ",__filename, "getPlayerList - Init Player list\n");
+    console.log("debug: ","__filename", "getPlayerList - Init Player list\n");
      db.transaction( tx => {
          tx.executeSql(
           "select * from PlayerList;", [],
@@ -95,6 +95,6 @@ export function getGameResult() {
      // (_, { rows: { _array } }) => setPResult(_array)
     );
   });
-console.log("debug:", __filename,'-', 'Get Game Result\n', 'List:'+ presult);
+console.log("debug:", "__filename",'-', 'Get Game Result\n', 'List:'+ presult);
 return presult;
 }

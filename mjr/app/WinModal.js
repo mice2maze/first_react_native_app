@@ -12,7 +12,7 @@ import PlayerModal from './Player';
 function insertGameResult(ps1,ps2,ps3,ps4,t1) {
   db.transaction((tx) => {
     tx.executeSql('insert into PlayingGame(P1Score, P2Score, P3Score, P4Score, TourID) values (?,?,?,?,?)', [ps1,ps2,ps3,ps4,t1]);
-    console.log("debug:", __filename,"rs"+ps);
+    console.log("debug:", "__filename","rs"+ps);
 
   });
 }
@@ -20,25 +20,25 @@ function insertGameResult(ps1,ps2,ps3,ps4,t1) {
 
 function returnFS(wn, los, rList, fN, fType) {
   const  fanN = rList.find(obj => {
-    console.log("debug:", __filename,'Fan List found!')
-    console.log("debug:", __filename,'-',rList);
-    console.log("debug:", __filename,'-',fType);
-    console.log("debug:", __filename,'-','Winner:'+wn);
-    console.log("debug:", __filename,'-','Loser: '+los);
-    console.log("debug:", __filename,'-',obj.FanNum + ':' + obj.bySelfPick + ':' + obj.byDiscard);
+    console.log("debug:", "__filename",'Fan List found!')
+    console.log("debug:", "__filename",'-',rList);
+    console.log("debug:", "__filename",'-',fType);
+    console.log("debug:", "__filename",'-','Winner:'+wn);
+    console.log("debug:", "__filename",'-','Loser: '+los);
+    console.log("debug:", "__filename",'-',obj.FanNum + ':' + obj.bySelfPick + ':' + obj.byDiscard);
     return (obj.FanNum == fN)  ? obj.bySelfPick : 0;
   });
 
   const playerResult = getGameResult();
   if (fType == 'bySelfPick') {
     playerResult[0] += fanN.bySelfPick;
-    console.log("debug:", __filename,'-','selfpick - RS:' + fanN.bySelfPick + 'Total:' + playerResult[0]);
+    console.log("debug:", "__filename",'-','selfpick - RS:' + fanN.bySelfPick + 'Total:' + playerResult[0]);
     
     return fanN.bySelfPick;
   }
   else if (fType == 'byDiscard') {
     playerResult[0] += fanN.byDiscard;
-    console.log("debug:", __filename,'-','discard - RS:'+ fanN.byDiscard + 'Total:' + playerResult[0]);
+    console.log("debug:", "__filename",'-','discard - RS:'+ fanN.byDiscard + 'Total:' + playerResult[0]);
     return fanN.byDiscard;
   }
 }
@@ -49,7 +49,7 @@ const PlayGame = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   var rsList = getRuleList(5);
   
-  console.log("debug: ",__filename, "Get Rule list ready\n", rsList);
+  console.log("debug: ","__filename", "Get Rule list ready\n", rsList);
 
   return (
     <PreviewLayout
