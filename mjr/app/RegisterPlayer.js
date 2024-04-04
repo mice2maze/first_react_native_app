@@ -187,7 +187,7 @@ const RegisterPlayer = ({ navigation }) => {
 
   return (
       <View style={{ flex: 1, backgroundColor: 'white' }}>
-        <View style={{ flex: 1/16, justifyConten: 'center', marginTop:15 }}>
+        <View style={{ flex: 1/16, justifyContent: 'center', marginTop:30 }}>
             <KeyboardAvoidingView
               behavior="padding"
               style={styles.flexRow} >
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
-    marginTop: 20,
+    marginTop: 50,
     width: "100%",
     justifyContent: "center",
     alignItems: "center",

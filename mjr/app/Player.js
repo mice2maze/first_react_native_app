@@ -7,7 +7,7 @@ import { Table, Row } from 'react-native-table-component';
 // import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 // import { NavigationContainer } from '@react-navigation/native';
 // import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { getGameResult } from './winCal';
+import { getGameResult } from './mjrdbHandler';
 //import { winFlagContext } from './newgame';
 
 //return final score

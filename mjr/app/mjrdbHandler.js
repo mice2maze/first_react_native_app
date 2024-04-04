@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import * as SQLite from "expo-sqlite";
 
@@ -10,13 +10,13 @@ function openDatabase() {
 const db = openDatabase();
 
 export function getRuleList(pid) {
-  //const [rList, setRList] = useState([]);
-  const rList = useRef([]);
+  const [rList, setRList] = useState([]);
+  //const rList = useRef([]);
   const sql = "SELECT * FROM gameRule order by FanNum;";
   const params = [];
   console.log("debug:", __filename,'-', Date().toLocaleString(), "getRuleList - start Get Rule list - ", pid);
 
-  //useEffect(() => {
+  useEffect(() => {
      db.transaction((tx) => {
          tx.executeSql(sql, params,
           (_, { rows: { _array } }) => {
@@ -30,7 +30,7 @@ export function getRuleList(pid) {
         );
       });
       console.log("debug:", __filename,'-', "inside db transaction - 2", sql, rList);
-  // }, [pid]);  
+   }, [pid]);  
   console.log("debug:", __filename,'-', "outside useEffect rulelist", rList);
 
   if (rList === null || rList.length === 0) {
@@ -42,21 +42,18 @@ export function getRuleList(pid) {
   ) ;
 }
 
-export function getPlayerList() {
-    const [player, setPlayer] = useState(null);
+export const getPlayerList = async (setPlayerList) => {
 
-    console.log("debug: ",__filename, "Init Player list\n", player);
-
-    useEffect(() => {
-      db.transaction((tx) => {
-        tx.executeSql(
+    console.log("debug: ",__filename, "getPlayerList - Init Player list\n");
+     db.transaction( tx => {
+         tx.executeSql(
           "select * from PlayerList;", [],
-          (_, { rows: { _array } }) => setPlayer(_array)
+          (_, { rows: { _array } }) => setPlayerList(_array)
         );
-      });
-    }, []);  
-    console.log("debug: ",__filename, "Get Player list\n", player);
-    return player;
+      }, 
+      (t, error) => { console.log("db error load players"); console.log(error) },
+      (_t, _success) => { console.log("loaded players", pList)}
+    );
 }    
 
 export function initPlayingGame() {

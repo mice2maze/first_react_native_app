@@ -6,7 +6,7 @@ import * as SQLite from "expo-sqlite";
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { getRuleList, getPlayerList, getGameResult } from './winCal';
+import { getRuleList, getPlayerList, getGameResult } from './mjrdbHandler';
 import PlayerModal from './Player';
 
 function insertGameResult(ps1,ps2,ps3,ps4,t1) {

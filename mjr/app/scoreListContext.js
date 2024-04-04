@@ -1,6 +1,10 @@
-import React, { useState, useContext, createContext } from "react";
+import React, { useState, useContext, createContext, useEffect } from "react";
+//import { getPlayerList } from "./mjrdbHandler";
+import * as SQLite from "expo-sqlite";
 
 const scoreListContext = createContext();
+
+const db = SQLite.openDatabase("mjr.db");
 
 export function useScoreList() {
   return useContext(scoreListContext);
@@ -21,12 +25,14 @@ export function ScoreListContext({ children }) {
         {FanNum: 10, byDiscard: 96, bySelfPick: 48, ruleID: 8},
       ]);
     
-    const [pList, setPList] = useState( [  { playerID: 0, playerName:'自己'}, 
-      {playerID : 1, playerName: '上家'}, 
-      {playerID : 2, playerName: '對家'},
-      {playerID : 3, playerName: '下家'} ] );
-    
-    const  [loserGroup, setLoserGroup] = useState(pList);        
+    const [pList, setPList] = useState( [  { PlayerID: 0, PlayerName:'自己'}, 
+      {PlayerID : 1, PlayerName: '上家'}, 
+      {PlayerID : 2, PlayerName: '對家'},
+      {PlayerID : 3, PlayerName: '下家'} ] );
+
+  //  const [pList, setPlist] = useState([{ playerID: 0, playerName:''}]);
+
+    const  [loserGroup, setLoserGroup] = useState(null);        
 
     const [winnerID, setWinnerID] = useState(-1);
     const [fanSelected, setFanSelected] = useState(-1);
@@ -45,17 +51,71 @@ export function ScoreListContext({ children }) {
       setWinType(-1);
       clearWinResultSet(-1);
     }
-    
-    const rsPlayName = (pID) => {
-      return (pID >0 ? loserGroup[pID].playerName:'');
-    } 
+     
 
-    const winFanSize = (sz) => {
-      rs = fanList.map((index) => (
-          sz
-      ))
-      return rs;
-    }
+    // function rsPlayName(pID) {
+    //   const [isPlayerLoaded, setPlayerLoaded] = useState(false);
+    //   console.log("debug:", __filename,'-', Date().toLocaleString(), "rsPlayName - in ", pID);
+
+    //   useEffect(() => { 
+    //     async function loadDataAsync() {
+    //       try {
+    //         getPlayerList(setPList);
+    //       } catch (e) {
+    //       console.log("debug:", __filename,'-', Date().toLocaleString(), "rsPlayName");
+    //     }
+    //     }  
+    //   loadDataAsync();
+    //   }, [] );
+    // return isPlayerLoaded;
+    // }
+
+    const getPlayerList = () => {
+
+      console.log("debug: ",__filename, "getPlayerList - Init Player list\n");
+       db.transaction( tx => {
+           tx.executeSql(
+            "select * from PlayerList;", [],
+            (_, { rows: { _array } }) => setPList(_array)
+          );
+        }, 
+        (t, error) => { console.log("db error load players"); console.log(error) },
+        (_t, _success) => { console.log("loaded players", _array)}
+      );
+      console.log("debug: ",__filename, "getPlayerList - Player list\n", pList);
+    }    
+
+    const getPlayerName = (plyID) => {
+
+      console.log("debug: ",__filename, "getPlayerList - Get Player Name\n");
+       db.transaction( tx => {
+           tx.executeSql(
+            "select * from PlayerList where PlayerID =?;", [plyID],
+            (_, { rows: { _array } }) => setPList(_array)
+          );
+        }, 
+        (t, error) => { console.log("db error load players"); console.log(error) },
+        (_t, _success) => { console.log("loaded players", _array)}
+      );
+      console.log("debug: ",__filename, "getPlayerName - Player Name\n", pList);
+    }    
+    // const getPlist = (pID) => {
+    //   console.log("debug:", __filename,'-', Date().toLocaleString(), "getPlist - in ", pID);
+
+    //   /* useEffect(() => {
+    //     prepPlayerList();
+    //   },[]);
+    //   */
+    //    prepPlayerList();
+
+    //   console.log("debug:", __filename,'-', Date().toLocaleString(), "getPlist - out ", pList);
+
+    // }
+
+    // function prepPlayerList() {
+    //   console.log("debug:", __filename,'-', Date().toLocaleString(), "prepPlayerList - in ", pList);
+    //   return getPlayerList(setPList);
+    // }
 
     const clickedWinner = (wID) => {
         setWinnerID(winnerID == wID?-1:wID) ;
@@ -137,7 +197,7 @@ export function ScoreListContext({ children }) {
                 {
                     setScoreList([{gameID: rowCnt, scores:[p0Score, p1Score, p2Score, p3Score]}]);
                 } else {
-                    setScoreList([...scoreList,{gameID: rowCnt+1, scores:[p0Score, p1Score, p2Score, p3Score]}]);
+                    setScoreList([{gameID: rowCnt+1, scores:[p0Score, p1Score, p2Score, p3Score]},...scoreList]);
                 }
                 setTotalScore([totalScore[0]+p0Score,totalScore[1]+p1Score, totalScore[2]+p2Score, totalScore[3]+p3Score]);
                 break;
@@ -238,7 +298,7 @@ export function ScoreListContext({ children }) {
                   {
                       setScoreList([{gameID: rowCnt, scores:[p0Score, p1Score, p2Score, p3Score]}]);
                   } else {
-                      setScoreList([...scoreList,{gameID: rowCnt+1, scores:[p0Score, p1Score, p2Score, p3Score]}]);
+                      setScoreList([{gameID: rowCnt+1, scores:[p0Score, p1Score, p2Score, p3Score]},...scoreList]);
                   }
                   setTotalScore([totalScore[0]+p0Score,totalScore[1]+p1Score, totalScore[2]+p2Score, totalScore[3]+p3Score]);
   
@@ -341,7 +401,7 @@ export function ScoreListContext({ children }) {
                   {
                       setScoreList([{gameID: rowCnt, scores:[p0Score, p1Score, p2Score, p3Score]}]);
                   } else {
-                      setScoreList([...scoreList,{gameID: rowCnt+1, scores:[p0Score, p1Score, p2Score, p3Score]}]);
+                      setScoreList([{gameID: rowCnt+1, scores:[p0Score, p1Score, p2Score, p3Score]},...scoreList]);
                   }
                   setTotalScore([totalScore[0]+p0Score,totalScore[1]+p1Score, totalScore[2]+p2Score, totalScore[3]+p3Score]);
 
@@ -378,7 +438,7 @@ export function ScoreListContext({ children }) {
         winLabel, setLabel:clickWinLabel,
         initWinResultSet: clearWinResultSet,
         pList, loserGroup, fanList, initAllVar : clearAllVar,
-        showPlayerName: rsPlayName, getWinFanSize: winFanSize,
+        getPlayerList, 
         totalScore
      }}>
       {children}

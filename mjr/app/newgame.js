@@ -59,6 +59,7 @@ const PlayGame = ({navigation}) => {
   const [columnGap, setColumnGap] = useState(10);
  // const {initWinResultSet,setWinnerFlag,setWinner, setLabel, winFlag, winResultSet, pList} = useScoreList() ;
 
+
   return (
     <ScoreListContext>  
     <PreviewLayout
@@ -74,8 +75,18 @@ const PlayGame = ({navigation}) => {
   );
 };
 
+const showPlayerName = () => {
+  const {pList, getPlayerList} = useScoreList();
+  getPlayerList();
+}
+
 const WinTableLayout = () => {
   const {initWinResultSet,setWinnerFlag,setWinner, setLabel, winFlag, winResultSet, pList, winLabel, initAllVar} = useScoreList() ;
+  showPlayerName();
+
+  console.log("debug:", __filename,'-', Date().toLocaleString(), "WinTableLayout - pList",  pList);
+
+
   return(
     <View style={[styles.container, 10, 10]}>
     <Text style={styles.sideBox}></Text>
@@ -209,13 +220,13 @@ const loserRow = () => {
 }
 
 const WinnerView = (showList) => {
-  const {winFlag, winType,winResultSet,winnerID,showPlayerName,getWinFanSize} = useScoreList();
+  const {winnerID, winType,winResultSet,winFlag,getPlayerList,getWinFanSize} = useScoreList();
   const showLoser = (winType == 1 || winType == -1) ? false:true;
   console.log("debug:", __filename,'-', Date().toLocaleString(), "WinnerView-sc", winResultSet);
   console.log("debug:", __filename,'-', Date().toLocaleString(), "WinnerView-WinType", winType);
   console.log("debug:", __filename,'-', Date().toLocaleString(), "WinnerView-showLoser", showLoser);
   console.log("debug:", __filename,'-', Date().toLocaleString(), "WinnerView-winFlag", winFlag);
-  console.log("debug:", __filename,'-', Date().toLocaleString(), "WinnerView-showPlayerName", showPlayerName);
+  console.log("debug:", __filename,'-', Date().toLocaleString(), "WinnerView-pList", getPlayerList);
   
   return (
     <View>
